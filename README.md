@@ -171,6 +171,56 @@ Resposta esperada:
 
 `GET /transactions`
 
+## Exemplos de erro
+
+### 400 Bad Request
+
+Exemplo de erro de validação:
+
+```json
+{
+  "error": "MethodArgumentNotValidException",
+  "message": "Erro de validacao nos campos informados.",
+  "timestamp": "2026-03-30T22:00:00",
+  "fields": [
+    {
+      "field": "email",
+      "message": "O email deve ser valido."
+    },
+    {
+      "field": "senha",
+      "message": "A senha e obrigatoria."
+    }
+  ]
+}
+```
+
+### 401 Unauthorized
+
+Exemplo quando o token nao foi enviado:
+
+```json
+{
+  "timestamp": "2026-03-30T22:00:00",
+  "status": 401,
+  "error": "Unauthorized",
+  "path": "/transactions"
+}
+```
+
+### 403 Forbidden
+
+Exemplo quando um usuario tenta acessar dados de outro:
+
+```json
+{
+  "error": "AccessDeniedException",
+  "message": "Voce nao tem permissao para acessar os dados de outro usuario.",
+  "timestamp": "2026-03-30T22:00:00",
+  "fields": null
+}
+```
+
 ## Regras importantes
 
 - cada categoria pertence a um usuário
