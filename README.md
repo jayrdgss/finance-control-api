@@ -33,7 +33,7 @@ Este projeto foi construído com foco em uma base moderna para APIs Java com Spr
 - categoria validada contra o usuário autenticado ao criar transação
 - responses de erro padronizadas com `error`, `message`, `timestamp` e `fields`
 
-## Executando localmente
+## Como rodar
 
 ### 1. Clonar o repositório
 
@@ -80,7 +80,7 @@ mvn spring-boot:run
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 - H2 Console: `http://localhost:8080/h2-console`
 
-## Segurança
+## Como autenticar
 
 Rotas públicas:
 
@@ -116,7 +116,7 @@ Authorization: Bearer SEU_TOKEN
 | `GET` | `/transactions/user/{userId}` | Sim | Lista transações do usuário autenticado validando acesso |
 | `POST` | `/transactions` | Sim | Cria transação usando categoria do próprio usuário |
 
-## Fluxo rápido de uso
+## Exemplos
 
 ### 1. Cadastrar usuário
 
@@ -252,4 +252,3 @@ src/main/java/controle_gastos
 - uso de variáveis de ambiente para segredos
 - banco relacional para produção
 - migrations com Flyway ou Liquibase
-
