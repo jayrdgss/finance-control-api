@@ -1,28 +1,39 @@
 # Finance Control API
 
-API REST para controle de gastos pessoais, construída com Java, Spring Boot, Spring Security, JWT e JPA.
+API REST de controle de gastos pessoais com autenticação JWT, isolamento multiusuário e documentação Swagger.
 
-## Tecnologias
+## Resumo
+
+Este projeto foi construído com foco em uma base moderna para APIs Java com Spring Boot. Ele permite:
+
+- cadastro de usuários
+- login com JWT
+- criação de categorias por usuário autenticado
+- criação de transações por usuário autenticado
+- isolamento de dados entre usuários
+- validação de entrada e tratamento padronizado de erros
+
+## Stack
 
 - Java 21
 - Spring Boot
 - Spring Security
 - JWT
 - Spring Data JPA
+- Bean Validation
 - H2 Database
 - Springdoc OpenAPI / Swagger
 
-## Funcionalidades atuais
+## Destaques da implementação
 
-- cadastro de usuário
-- login com JWT
-- categorias por usuário autenticado
-- transações por usuário autenticado
-- validação com Bean Validation
-- tratamento global de erros
-- documentação com Swagger
+- autenticação stateless com JWT
+- senhas protegidas com BCrypt
+- categorias isoladas por usuário
+- transações isoladas por usuário
+- categoria validada contra o usuário autenticado ao criar transação
+- responses de erro padronizadas com `error`, `message`, `timestamp` e `fields`
 
-## Como rodar o projeto
+## Executando localmente
 
 ### 1. Clonar o repositório
 
@@ -33,13 +44,13 @@ cd finance-control-api
 
 ### 2. Configurar o JWT
 
-No arquivo [application.properties](/home/jayane/Área%20de%20Trabalho/1000DEVS/api-controle-gastos/controle-gastos/src/main/resources/application.properties), substitua:
+No arquivo [application.properties](/home/jayane/Área%20de%20Trabalho/1000DEVS/api-controle-gastos/controle-gastos/src/main/resources/application.properties), troque:
 
 ```properties
 jwt.secret=<SECRET>
 ```
 
-por uma chave Base64 válida com pelo menos 32 bytes.
+por uma chave Base64 válida.
 
 Exemplo:
 
@@ -48,7 +59,7 @@ jwt.secret=c2VncmVkb19tdWl0b19zZWd1cm9fY29tXzMyX2J5dGVzX21pbmltbw==
 jwt.expiration=3600000
 ```
 
-### 3. Executar a aplicação
+### 3. Subir a aplicação
 
 Com Maven Wrapper:
 
@@ -56,27 +67,28 @@ Com Maven Wrapper:
 ./mvnw spring-boot:run
 ```
 
-Ou com Maven instalado:
+Com Maven instalado:
 
 ```bash
 mvn spring-boot:run
 ```
 
-## Acesso local
+## Acessos locais
 
 - API: `http://localhost:8080`
 - Swagger UI: `http://localhost:8080/swagger-ui/index.html`
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 - H2 Console: `http://localhost:8080/h2-console`
 
-## Autenticação
+## Segurança
 
 Rotas públicas:
 
 - `POST /users`
 - `POST /auth/login`
-- Swagger
-- H2 Console
+- `/swagger-ui/**`
+- `/v3/api-docs/**`
+- `/h2-console/**`
 
 Rotas protegidas:
 
@@ -86,7 +98,7 @@ Rotas protegidas:
 - `GET /transactions/user/{userId}`
 - `POST /transactions`
 
-Após fazer login, envie o token no header:
+Header esperado nas rotas protegidas:
 
 ```http
 Authorization: Bearer SEU_TOKEN
@@ -94,17 +106,17 @@ Authorization: Bearer SEU_TOKEN
 
 ## Endpoints
 
-| Método | Rota | Autenticação | Descrição |
+| Método | Rota | Auth | Descrição |
 | --- | --- | --- | --- |
-| `POST` | `/users` | Não | Cadastra um novo usuário |
-| `POST` | `/auth/login` | Não | Realiza login e retorna token JWT |
-| `GET` | `/categories` | Sim | Lista apenas as categorias do usuário autenticado |
-| `POST` | `/categories` | Sim | Cria uma categoria para o usuário autenticado |
-| `GET` | `/transactions` | Sim | Lista apenas as transações do usuário autenticado |
-| `GET` | `/transactions/user/{userId}` | Sim | Lista transações do usuário autenticado, validando acesso |
-| `POST` | `/transactions` | Sim | Cria uma transação para o usuário autenticado |
+| `POST` | `/users` | Não | Cadastra um usuário |
+| `POST` | `/auth/login` | Não | Autentica e retorna JWT |
+| `GET` | `/categories` | Sim | Lista apenas categorias do usuário autenticado |
+| `POST` | `/categories` | Sim | Cria categoria para o usuário autenticado |
+| `GET` | `/transactions` | Sim | Lista apenas transações do usuário autenticado |
+| `GET` | `/transactions/user/{userId}` | Sim | Lista transações do usuário autenticado validando acesso |
+| `POST` | `/transactions` | Sim | Cria transação usando categoria do próprio usuário |
 
-## Fluxo recomendado de uso
+## Fluxo rápido de uso
 
 ### 1. Cadastrar usuário
 
@@ -129,7 +141,7 @@ Authorization: Bearer SEU_TOKEN
 }
 ```
 
-Resposta esperada:
+Resposta:
 
 ```json
 {
@@ -138,7 +150,7 @@ Resposta esperada:
 }
 ```
 
-### 3. Criar categoria
+### 3. Criar categoria autenticada
 
 `POST /categories`
 
@@ -149,11 +161,7 @@ Resposta esperada:
 }
 ```
 
-### 4. Listar categorias do usuário autenticado
-
-`GET /categories`
-
-### 5. Criar transação
+### 4. Criar transação autenticada
 
 `POST /transactions`
 
@@ -167,15 +175,23 @@ Resposta esperada:
 }
 ```
 
-### 6. Listar transações do usuário autenticado
+### 5. Listar dados do usuário autenticado
 
-`GET /transactions`
+- `GET /categories`
+- `GET /transactions`
+
+## Regras de negócio atuais
+
+- cada categoria pertence a um usuário
+- cada transação pertence a um usuário
+- um usuário não pode acessar categorias de outro
+- um usuário não pode acessar transações de outro
+- uma transação só pode usar categoria do próprio usuário autenticado
+- o tipo da transação deve ser compatível com o tipo da categoria
 
 ## Exemplos de erro
 
 ### 400 Bad Request
-
-Exemplo de erro de validação:
 
 ```json
 {
@@ -186,18 +202,12 @@ Exemplo de erro de validação:
     {
       "field": "email",
       "message": "O email deve ser valido."
-    },
-    {
-      "field": "senha",
-      "message": "A senha e obrigatoria."
     }
   ]
 }
 ```
 
 ### 401 Unauthorized
-
-Exemplo quando o token nao foi enviado:
 
 ```json
 {
@@ -210,8 +220,6 @@ Exemplo quando o token nao foi enviado:
 
 ### 403 Forbidden
 
-Exemplo quando um usuario tenta acessar dados de outro:
-
 ```json
 {
   "error": "AccessDeniedException",
@@ -220,13 +228,6 @@ Exemplo quando um usuario tenta acessar dados de outro:
   "fields": null
 }
 ```
-
-## Regras importantes
-
-- cada categoria pertence a um usuário
-- cada transação pertence a um usuário
-- uma transação só pode usar categoria do próprio usuário autenticado
-- o tipo da transação deve ser compatível com o tipo da categoria
 
 ## Estrutura do projeto
 
@@ -243,10 +244,12 @@ src/main/java/controle_gastos
 └── service
 ```
 
-## Próximos passos sugeridos
+## Melhorias futuras
 
-- adicionar update e delete
-- adicionar filtros por período, tipo e categoria
-- criar testes unitários e de integração
-- mover segredos para variáveis de ambiente
-- configurar banco relacional para produção
+- update e delete para categorias e transações
+- filtros por período, tipo e categoria
+- testes unitários e de integração
+- uso de variáveis de ambiente para segredos
+- banco relacional para produção
+- migrations com Flyway ou Liquibase
+
