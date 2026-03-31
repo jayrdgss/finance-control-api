@@ -80,6 +80,18 @@ mvn spring-boot:run
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 - H2 Console: `http://localhost:8080/h2-console`
 
+## 📄 Swagger UI
+
+A API pode ser testada visualmente pelo Swagger UI.
+
+![Swagger UI](screenshots/swagger.png)
+
+## 🔐 Autenticação (JWT)
+
+O endpoint de login pode ser testado diretamente pelo Swagger para gerar o token JWT.
+
+![Swagger Login](screenshots/swagger-login.png)
+
 ## Como autenticar
 
 Rotas públicas:
