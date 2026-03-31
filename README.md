@@ -92,6 +92,18 @@ Após fazer login, envie o token no header:
 Authorization: Bearer SEU_TOKEN
 ```
 
+## Endpoints
+
+| Método | Rota | Autenticação | Descrição |
+| --- | --- | --- | --- |
+| `POST` | `/users` | Não | Cadastra um novo usuário |
+| `POST` | `/auth/login` | Não | Realiza login e retorna token JWT |
+| `GET` | `/categories` | Sim | Lista apenas as categorias do usuário autenticado |
+| `POST` | `/categories` | Sim | Cria uma categoria para o usuário autenticado |
+| `GET` | `/transactions` | Sim | Lista apenas as transações do usuário autenticado |
+| `GET` | `/transactions/user/{userId}` | Sim | Lista transações do usuário autenticado, validando acesso |
+| `POST` | `/transactions` | Sim | Cria uma transação para o usuário autenticado |
+
 ## Fluxo recomendado de uso
 
 ### 1. Cadastrar usuário
@@ -188,4 +200,3 @@ src/main/java/controle_gastos
 - criar testes unitários e de integração
 - mover segredos para variáveis de ambiente
 - configurar banco relacional para produção
-
